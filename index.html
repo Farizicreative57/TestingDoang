@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KLASIFIKASI</title>
+</head>
+<body style="text-align: center; font-family: Arial, Helvetica, sans-serif;">
+    <h1>SULAP DIGITAL: SAYA BISA TAU GENDER ANDA BERDASARKAN WAJAH</h1>
+    <h3>TOLONG UPLOAD TERLEBIH DAHULU WAJAH ANDA</h3>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file", id="fileInput" name="image" accept="image/*" required>
+        <button type="submit">tekan untuk prediksi</button>
+    </form>
+    <h3 id="gender"></h3>
+    <h3 id="accuracy"></h3>
+    <p>catatan aja: gue gak tau cara deteksi wajah terus otomatis crop gambar</p>
+    <p>jadi kalau bisa, gambarnya fokus di wajah lu</p>
+    <p>akurasi gak bekerja digambar anime, dan ini bukan deteksi bentuk tubuh</p>
+    <p>gambarnya temporary, gak bakalan gue jadiin bahal pinjol</p>
+    <script>
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!response.ok) {
+                    throw new Error("Gagal dapat respon");
+                }
+                const data = await response.json();
+                console.log("log:", data);
+            document.getElementById("gender").innerHTML = "SAYA PREDIKSI BAHWA KAMU SEORANG: " + data.prediction;
+            document.getElementById("accuracy").innerHTML = "DENGAN AKURASI:" + data.accuracy + "%";
+            } catch (error) {
+            document.getElementById("result").innerText = 'Error: ${error}';
+            }
+        };
+    </script>
+</body>
+</html>
